@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        #main-header {
+            background-color: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #77aaff 3px solid;
+        }
+        #main-header h1 {
+            text-align: center;
+            text-transform: uppercase;
+            margin: 0;
+            font-size: 24px;
+        }
+        #employee-form {
+            background: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .form-control {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 18px;
+            width: 100%;
+        }
+        .form-control button {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        #employees {
+            margin-top: 20px;
+        }
+        .employee {
+            background: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <h1>Employee Management</h1>
+        </div>
+    </header>
+    <div class="container">
+        <div id="employee-form">
+            <input type="text" id="name" class="form-control" placeholder="Name">
+            <input type="text" id="stream" class="form-control" placeholder="Stream">
+            <input type="text" id="mobileNumber" class="form-control" placeholder="Mobile Number">
+            <input type="number" id="salary" class="form-control" placeholder="Salary">
+            <button onclick="addEmployee()">Add Employee</button>
+        </div>
+        <div id="employees"></div>
+    </div>
+    <script>
+        async function fetchEmployees() {
+            const response = await fetch('/api/employees');
+            const employees = await response.json();
+            const employeeDiv = document.getElementById('employees');
+            employeeDiv.innerHTML = '';
+            employees.forEach(employee => {
+                const div = document.createElement('div');
+                div.classList.add('employee');
+                div.innerHTML = `
+                    <h3>${employee.name}</h3>
+                    <p>${employee.stream}</p>
+                    <p>${employee.mobileNumber}</p>
+                    <p>${employee.salary}</p>
+                `;
+                employeeDiv.appendChild(div);
+            });
+        }
+
+        async function addEmployee() {
+            const name = document.getElementById('name').value;
+            const stream = document.getElementById('stream').value;
+            const mobileNumber = document.getElementById('mobileNumber').value;
+            const salary = document.getElementById('salary').value;
+
+            const response = await fetch('/api/employees', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    stream,
+                    mobileNumber,
+                    salary
+                })
+            });
+
+            if (response.ok) {
+                fetchEmployees();
+            }
+        }
+
+        fetchEmployees();
+    </script>
+</body>
+</html>
